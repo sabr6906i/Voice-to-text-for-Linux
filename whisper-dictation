@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# whisper-dictation: push-to-talk dictation for Linux (Wayland)
+# https://github.com/YOUR_USER/whisper-dictation
+
+PIDFILE=/tmp/whisper-dictation.pid
+RECFILE=/tmp/whisper-dictation.wav
+WHISPER="$HOME/whisper.cpp/build/bin/whisper-cli"
+MODEL="$HOME/whisper.cpp/models/ggml-small.en.bin"
+
+if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+  kill "$(cat "$PIDFILE")" 2>/dev/null
+  rm -f "$PIDFILE"
+  notify-send "Dictation" "Transcribing..."
+  TEXT=$("$WHISPER" -m "$MODEL" -f "$RECFILE" -nt 2>/dev/null \
+    | grep -v "^$" \
+    | grep -v "whisper_" \
+    | grep -v "system_info" \
+    | grep -v "main:" \
+    | grep -v "\[BLANK_AUDIO\]" \
+    | sed 's/^[[:space:]]*//')
+  if [ -n "$TEXT" ]; then
+    printf '%s' "$TEXT" | ydotool type --file -
+  fi
+  rm -f "$RECFILE"
+  notify-send "Dictation" "Done"
+else
+  rm -f "$RECFILE" "$PIDFILE"
+  pw-cat --record "$RECFILE" --rate 16000 --channels=1 --format=s16 &
+  echo $! > "$PIDFILE"
+  notify-send "Dictation" "Recording..."
+fi

@@ -37,7 +37,7 @@ natural speech patterns far better.
 ## Quick Install
 
 ```bash
-git clone https://github.com/YOUR_USER/whisper-dictation.git
+git clone https://github.com/sabr6906i/Voice-to-text-for-Linux.git
 cd whisper-dictation
 chmod +x setup.sh
 ./setup.sh

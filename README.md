@@ -7,6 +7,11 @@ keys, no data leaves your machine.
 
 Press a key, speak, press again — text appears in any application.
 
+speed upto 300wpm
+
+<img width="1866" height="1078" alt="image" src="https://github.com/user-attachments/assets/dc13dd65-e517-42ab-a439-fdd8c9ce215f" />
+
+
 ## Why Whisper?
 
 | Model | Architecture | Accuracy |

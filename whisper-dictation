@@ -1,12 +1,25 @@
 #!/bin/bash
 
 # whisper-dictation: push-to-talk dictation for Linux (Wayland)
-# https://github.com/YOUR_USER/whisper-dictation
+# https://github.com/sabr6906i/Voice-to-text-for-Linux
 
 PIDFILE=/tmp/whisper-dictation.pid
 RECFILE=/tmp/whisper-dictation.wav
 WHISPER="$HOME/whisper.cpp/build/bin/whisper-cli"
 MODEL="$HOME/whisper.cpp/models/ggml-small.en.bin"
+HISTORY="${XDG_DATA_HOME:-$HOME/.local/share}/whisper-dictation/history.txt"
+
+mkdir -p "$(dirname "$HISTORY")"
+
+# Show transcription history
+if [ "$1" = "--history" ]; then
+  if [ -f "$HISTORY" ]; then
+    cat "$HISTORY"
+  else
+    echo "No history yet."
+  fi
+  exit 0
+fi
 
 if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
   kill "$(cat "$PIDFILE")" 2>/dev/null
@@ -21,6 +34,7 @@ if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
     | sed 's/^[[:space:]]*//')
   if [ -n "$TEXT" ]; then
     printf '%s' "$TEXT" | ydotool type --file -
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $TEXT" >> "$HISTORY"
   fi
   rm -f "$RECFILE"
   notify-send "Dictation" "Done"
